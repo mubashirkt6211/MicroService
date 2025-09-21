@@ -20,8 +20,8 @@ public class RestaurantRequest {
     private Date closingTime;
     private String phoneNumber;
     private String email;
-    private String instagramUrl;
-    private String facebookUrl;
+    private String instagram_url;
+    private String facebook_url;
     private String imageUrl;
     private String logoUrl;
     private boolean isOpen;
@@ -31,7 +31,6 @@ public class RestaurantRequest {
     private int estimatedDeliveryTime;
 
     private List<String> tags;
-    private List<DishRequest> dishes;
     private List<CategoryRequest> categories;
 
 }

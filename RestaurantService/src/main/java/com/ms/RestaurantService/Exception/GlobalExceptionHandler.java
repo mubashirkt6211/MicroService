@@ -13,7 +13,23 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(RestaurantException.class)
-    public ResponseEntity<Map<String, Object>> handleResourceNotFound(RestaurantException ex) {
+    public ResponseEntity<Map<String, Object>> handleRestaurantException(RestaurantException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", false);
+        response.put("message", ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleCategoryNotFound(CategoryNotFoundException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", false);
+        response.put("message", ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DishNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleCategoryNotFound(DishNotFoundException ex) {
         Map<String, Object> response = new HashMap<>();
         response.put("success", false);
         response.put("message", ex.getMessage());

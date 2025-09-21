@@ -1,16 +1,19 @@
 package com.ms.RestaurantService.Service;
 
-import com.ms.RestaurantService.Dto.RestaurantRequest;
 import com.ms.RestaurantService.Dto.CategoryRequest;
 import com.ms.RestaurantService.Dto.DishRequest;
-import com.ms.RestaurantService.Entity.Restaurant;
+import com.ms.RestaurantService.Dto.RestaurantRequest;
 import com.ms.RestaurantService.Entity.Category;
 import com.ms.RestaurantService.Entity.Dish;
+import com.ms.RestaurantService.Entity.Restaurant;
 import com.ms.RestaurantService.Exception.RestaurantException;
+import com.ms.RestaurantService.Repository.CategoryRepository;
+import com.ms.RestaurantService.Repository.DishRepository;
 import com.ms.RestaurantService.Repository.RestaurantRepository;
-import jakarta.persistence.EntityNotFoundException;
+import com.ms.RestaurantService.Service.RestaurantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,46 +23,25 @@ import java.util.List;
 public class RestaurantServiceImpl implements RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
+    private final CategoryRepository categoryRepository;
+    private final DishRepository dishRepository;
 
     @Override
+    @Transactional
     public Restaurant createRestaurant(RestaurantRequest request) {
         Restaurant restaurant = mapToRestaurant(request);
-        return restaurantRepository.save(restaurant);
-    }
+        Restaurant savedRestaurant = restaurantRepository.save(restaurant);
 
-    @Override
-    public Restaurant updateRestaurant(Long id, RestaurantRequest request) throws RestaurantException {
-        Restaurant existing = restaurantRepository.findById(id)
-                .orElseThrow(() -> new RestaurantException("Restaurant not found"));
-
-        existing.setName(request.getName());
-        existing.setDescription(request.getDescription());
-        existing.setCuisineType(request.getCuisineType());
-        existing.setLocation(request.getLocation());
-        existing.setPhoneNumber(request.getPhoneNumber());
-        existing.setEmail(request.getEmail());
-        existing.setImageUrl(request.getImageUrl());
-        existing.setLogoUrl(request.getLogoUrl());
-        existing.setInstagram_url(request.getInstagramUrl());
-        existing.setFacebook_url(request.getFacebookUrl());
-        existing.setOpen(request.isOpen());
-        existing.setFeatured(request.isFeatured());
-        existing.setVerified(request.isVerified());
-        existing.setDeliveryFee(request.getDeliveryFee());
-        existing.setEstimatedDeliveryTime(request.getEstimatedDeliveryTime());
-        existing.setTags(request.getTags());
-
-        List<Category> categories = new ArrayList<>();
         if (request.getCategories() != null) {
-            for (CategoryRequest categoryReq : request.getCategories()) {
+            for (CategoryRequest catReq : request.getCategories()) {
                 Category category = new Category();
-                category.setName(categoryReq.getName());
-                category.setImageUrl(categoryReq.getImageUrl());
-                category.setRestaurant(existing);
+                category.setName(catReq.getName());
+                category.setImageUrl(catReq.getImageUrl());
+                category.setRestaurant(savedRestaurant);
+                Category savedCategory = categoryRepository.save(category);
 
-                List<Dish> dishes = new ArrayList<>();
-                if (categoryReq.getDishes() != null) {
-                    for (DishRequest dishReq : categoryReq.getDishes()) {
+                if (catReq.getDishes() != null) {
+                    for (DishRequest dishReq : catReq.getDishes()) {
                         Dish dish = new Dish();
                         dish.setName(dishReq.getName());
                         dish.setDescription(dishReq.getDescription());
@@ -71,23 +53,93 @@ public class RestaurantServiceImpl implements RestaurantService {
                         dish.setIngredients(dishReq.getIngredients());
                         dish.setTags(dishReq.getTags());
                         dish.setPreparationTime(dishReq.getPreparationTime());
-                        dish.setCategory(category);
-                        dishes.add(dish);
+                        dish.setCategory(savedCategory);
+                        dishRepository.save(dish);
                     }
                 }
-                category.setDishes(dishes);
-                categories.add(category);
             }
         }
-        existing.setCategories(categories);
 
-        return restaurantRepository.save(existing);
+        return savedRestaurant;
     }
+    @Override
+    @Transactional
+    public Restaurant updateRestaurant(Long id, RestaurantRequest request) throws RestaurantException {
+        Restaurant restaurant = restaurantRepository.findById(id)
+                .orElseThrow(() -> new RestaurantException("Restaurant not found with id: " + id));
+
+        restaurant.setName(request.getName());
+        restaurant.setDescription(request.getDescription());
+        restaurant.setCuisineType(request.getCuisineType());
+        restaurant.setLocation(request.getLocation());
+        restaurant.setOpenTime(request.getOpenTime());
+        restaurant.setClosingTime(request.getClosingTime());
+        restaurant.setPhoneNumber(request.getPhoneNumber());
+        restaurant.setEmail(request.getEmail());
+        restaurant.setInstagram_url(request.getInstagram_url());
+        restaurant.setFacebook_url(request.getFacebook_url());
+        restaurant.setImageUrl(request.getImageUrl());
+        restaurant.setLogoUrl(request.getLogoUrl());
+        restaurant.setOpen(request.isOpen());
+        restaurant.setFeatured(request.isFeatured());
+        restaurant.setVerified(request.isVerified());
+        restaurant.setDeliveryFee(request.getDeliveryFee());
+        restaurant.setEstimatedDeliveryTime(request.getEstimatedDeliveryTime());
+        restaurant.setTags(request.getTags());
+
+        List<Category> updatedCategories = new ArrayList<>();
+        if (request.getCategories() != null) {
+            for (CategoryRequest catReq : request.getCategories()) {
+                Category category;
+
+                category = restaurant.getCategories().stream()
+                        .filter(c -> c.getName().equalsIgnoreCase(catReq.getName()))
+                        .findFirst()
+                        .orElse(new Category());
+
+                category.setName(catReq.getName());
+                category.setImageUrl(catReq.getImageUrl());
+                category.setRestaurant(restaurant);
+                Category savedCategory = categoryRepository.save(category);
+
+                List<Dish> updatedDishes = new ArrayList<>();
+                if (catReq.getDishes() != null) {
+                    for (DishRequest dishReq : catReq.getDishes()) {
+                        Dish dish;
+
+                        dish = savedCategory.getDishes().stream()
+                                .filter(d -> d.getName().equalsIgnoreCase(dishReq.getName()))
+                                .findFirst()
+                                .orElse(new Dish());
+
+                        dish.setName(dishReq.getName());
+                        dish.setDescription(dishReq.getDescription());
+                        dish.setPrice(dishReq.getPrice());
+                        dish.setAvailable(dishReq.isAvailable());
+                        dish.setVeg(dishReq.isVeg());
+                        dish.setSpicy(dishReq.isSpicy());
+                        dish.setImageUrl(dishReq.getImageUrl());
+                        dish.setIngredients(dishReq.getIngredients());
+                        dish.setTags(dishReq.getTags());
+                        dish.setPreparationTime(dishReq.getPreparationTime());
+                        dish.setCategory(savedCategory);
+
+                        updatedDishes.add(dishRepository.save(dish));
+                    }
+                }
+                savedCategory.setDishes(updatedDishes);
+                updatedCategories.add(savedCategory);
+            }
+        }
+        restaurant.setCategories(updatedCategories);
+        return restaurantRepository.save(restaurant);
+    }
+
 
     @Override
     public void deleteRestaurant(Long id) throws RestaurantException {
         if (!restaurantRepository.existsById(id)) {
-            throw new RestaurantException("Restaurant not found");
+            throw new RestaurantException("Restaurant not found with id: " + id);
         }
         restaurantRepository.deleteById(id);
     }
@@ -95,7 +147,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Override
     public Restaurant getRestaurantById(Long id) throws RestaurantException {
         return restaurantRepository.findById(id)
-                .orElseThrow(() -> new RestaurantException("Restaurant not found"));
+                .orElseThrow(() -> new RestaurantException("Restaurant not found with id: " + id));
     }
 
     @Override
@@ -109,50 +161,20 @@ public class RestaurantServiceImpl implements RestaurantService {
         restaurant.setDescription(request.getDescription());
         restaurant.setCuisineType(request.getCuisineType());
         restaurant.setLocation(request.getLocation());
+        restaurant.setOpenTime(request.getOpenTime());
+        restaurant.setClosingTime(request.getClosingTime());
         restaurant.setPhoneNumber(request.getPhoneNumber());
         restaurant.setEmail(request.getEmail());
+        restaurant.setInstagram_url(request.getInstagram_url());
+        restaurant.setFacebook_url(request.getFacebook_url());
         restaurant.setImageUrl(request.getImageUrl());
         restaurant.setLogoUrl(request.getLogoUrl());
-        restaurant.setInstagram_url(request.getInstagramUrl());
-        restaurant.setFacebook_url(request.getFacebookUrl());
         restaurant.setOpen(request.isOpen());
         restaurant.setFeatured(request.isFeatured());
         restaurant.setVerified(request.isVerified());
         restaurant.setDeliveryFee(request.getDeliveryFee());
         restaurant.setEstimatedDeliveryTime(request.getEstimatedDeliveryTime());
         restaurant.setTags(request.getTags());
-
-        List<Category> categories = new ArrayList<>();
-        if (request.getCategories() != null) {
-            for (CategoryRequest categoryReq : request.getCategories()) {
-                Category category = new Category();
-                category.setName(categoryReq.getName());
-                category.setImageUrl(categoryReq.getImageUrl());
-                category.setRestaurant(restaurant);
-
-                List<Dish> dishes = new ArrayList<>();
-                if (categoryReq.getDishes() != null) {
-                    for (DishRequest dishReq : categoryReq.getDishes()) {
-                        Dish dish = new Dish();
-                        dish.setName(dishReq.getName());
-                        dish.setDescription(dishReq.getDescription());
-                        dish.setPrice(dishReq.getPrice());
-                        dish.setAvailable(dishReq.isAvailable());
-                        dish.setVeg(dishReq.isVeg());
-                        dish.setSpicy(dishReq.isSpicy());
-                        dish.setImageUrl(dishReq.getImageUrl());
-                        dish.setIngredients(dishReq.getIngredients());
-                        dish.setTags(dishReq.getTags());
-                        dish.setPreparationTime(dishReq.getPreparationTime());
-                        dish.setCategory(category);
-                        dishes.add(dish);
-                    }
-                }
-                category.setDishes(dishes);
-                categories.add(category);
-            }
-        }
-        restaurant.setCategories(categories);
         return restaurant;
     }
 }

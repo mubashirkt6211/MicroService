@@ -9,9 +9,13 @@ import java.util.List;
 public interface RestaurantService {
 
     Restaurant createRestaurant(RestaurantRequest request);
+
     Restaurant updateRestaurant(Long id, RestaurantRequest request) throws RestaurantException;
+
     void deleteRestaurant(Long id) throws RestaurantException;
+
     Restaurant getRestaurantById(Long id) throws RestaurantException;
+
     List<Restaurant> getAllRestaurants();
 
 }

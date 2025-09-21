@@ -21,4 +21,5 @@ public class DishRequest {
     private List<String> ingredients;
     private List<String> tags;
     private int preparationTime;
+//    private Long categoryId;
 }
