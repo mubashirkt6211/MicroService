@@ -14,6 +14,7 @@ public interface RestaurantService {
     RestaurantResponse updateRestaurant(Long id, RestaurantRequest request) throws RestaurantException;
 
     void deleteRestaurant(Long id) throws RestaurantException;
+
     RestaurantResponse getRestaurantById(Long id) throws RestaurantException;
 
     List<RestaurantResponse> getAllRestaurants();

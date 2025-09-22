@@ -66,11 +66,11 @@ public class Restaurant {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "open_time")
-    private Date openTime;
+    private String openTime;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "closing_time")
-    private Date closingTime;
+    private String closingTime;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", updatable = false)

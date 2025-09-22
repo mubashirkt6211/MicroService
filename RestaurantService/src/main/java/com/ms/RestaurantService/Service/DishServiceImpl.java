@@ -41,7 +41,6 @@ public class DishServiceImpl implements DishService{
         dish.setTags(dishRequest.getTags());
         dish.setPreparationTime(dishRequest.getPreparationTime());
         dish.setCategory(category);
-
         return dishRepository.save(dish);
     }
 

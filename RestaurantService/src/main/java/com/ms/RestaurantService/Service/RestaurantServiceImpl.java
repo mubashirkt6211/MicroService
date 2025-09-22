@@ -22,8 +22,6 @@ public class RestaurantServiceImpl implements RestaurantService {
     public RestaurantResponse createRestaurant(RestaurantRequest request) {
         Restaurant restaurant = mapToRestaurant(request);
         Restaurant savedRestaurant = restaurantRepository.save(restaurant);
-
-        // categories will be added separately
         return mapToResponse(savedRestaurant, new ArrayList<>());
     }
 
@@ -31,8 +29,6 @@ public class RestaurantServiceImpl implements RestaurantService {
     public RestaurantResponse getRestaurantById(Long id) throws RestaurantException {
         Restaurant restaurant = restaurantRepository.findById(id)
                 .orElseThrow(() -> new RestaurantException("Restaurant not found with id: " + id));
-
-        // categories will be loaded via CategoryService
         return mapToResponse(restaurant, new ArrayList<>());
     }
 
@@ -50,10 +46,8 @@ public class RestaurantServiceImpl implements RestaurantService {
     public RestaurantResponse updateRestaurant(Long id, RestaurantRequest request) throws RestaurantException {
         Restaurant restaurant = restaurantRepository.findById(id)
                 .orElseThrow(() -> new RestaurantException("Restaurant not found with id: " + id));
-
         updateRestaurantEntity(restaurant, request);
         restaurantRepository.save(restaurant);
-
         return mapToResponse(restaurant, new ArrayList<>());
     }
 
@@ -65,7 +59,6 @@ public class RestaurantServiceImpl implements RestaurantService {
         restaurantRepository.deleteById(id);
     }
 
-    // ==================== Helper Methods ====================
     private Restaurant mapToRestaurant(RestaurantRequest request) {
         Restaurant r = new Restaurant();
         r.setName(request.getName());
@@ -124,17 +117,13 @@ public class RestaurantServiceImpl implements RestaurantService {
         response.setFacebookUrl(restaurant.getFacebookUrl());
         response.setImageUrl(restaurant.getImageUrl());
         response.setLogoUrl(restaurant.getLogoUrl());
-
-        // Updated setter calls
         response.setOpen(restaurant.isOpen());
         response.setFeatured(restaurant.isFeatured());
         response.setVerified(restaurant.isVerified());
-
         response.setDeliveryFee(restaurant.getDeliveryFee());
         response.setEstimatedDeliveryTime(restaurant.getEstimatedDeliveryTime());
         response.setTags(restaurant.getTags());
         response.setCategories(categoryResponses);
-
         return response;
     }
 }

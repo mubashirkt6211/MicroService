@@ -18,14 +18,12 @@ public class RestaurantController {
 
     private final RestaurantService restaurantService;
 
-    // ---------------- CREATE ----------------
     @PostMapping
     public ResponseEntity<RestaurantResponse> createRestaurant(@Valid @RequestBody RestaurantRequest request) {
         RestaurantResponse created = restaurantService.createRestaurant(request);
         return ResponseEntity.ok(created);
     }
 
-    // ---------------- UPDATE ----------------
     @PutMapping("/{id}")
     public ResponseEntity<RestaurantResponse> updateRestaurant(
             @PathVariable Long id,
@@ -34,21 +32,18 @@ public class RestaurantController {
         return ResponseEntity.ok(updated);
     }
 
-    // ---------------- DELETE ----------------
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteRestaurant(@PathVariable Long id) throws RestaurantException {
         restaurantService.deleteRestaurant(id);
         return ResponseEntity.ok("Restaurant deleted successfully");
     }
 
-    // ---------------- GET BY ID ----------------
     @GetMapping("/{id}")
     public ResponseEntity<RestaurantResponse> getRestaurantById(@PathVariable Long id) throws RestaurantException {
         RestaurantResponse restaurant = restaurantService.getRestaurantById(id);
         return ResponseEntity.ok(restaurant);
     }
 
-    // ---------------- GET ALL ----------------
     @GetMapping
     public ResponseEntity<List<RestaurantResponse>> getAllRestaurants() {
         List<RestaurantResponse> restaurants = restaurantService.getAllRestaurants();

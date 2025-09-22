@@ -17,32 +17,22 @@ public class RestaurantRequest {
     @NotBlank(message = "Restaurant name cannot be blank")
     @Size(min = 2, max = 255)
     private String name;
-
     private String description;
-
     private String cuisineType;
     private String location;
-
-    private Date openTime;
-    private Date closingTime;
-
+    private String openTime;
+    private String closingTime;
     private String phoneNumber;
     private String email;
-
     private String instagramUrl;
     private String facebookUrl;
-
     private String imageUrl;
     private String logoUrl;
-
     private double deliveryFee;
     private int estimatedDeliveryTime;
-
     private boolean isOpen;
     private boolean isFeatured;
     private boolean isVerified;
-
     private List<String> tags;
-
     private List<CategoryRequest> categories;
 }

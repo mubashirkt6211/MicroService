@@ -22,12 +22,9 @@ public class RestaurantResponse {
     private String facebookUrl;
     private String imageUrl;
     private String logoUrl;
-
-    // Renamed boolean fields (remove 'is' prefix)
     private boolean open;
     private boolean featured;
     private boolean verified;
-
     private double deliveryFee;
     private int estimatedDeliveryTime;
     private List<String> tags;
