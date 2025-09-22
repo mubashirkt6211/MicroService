@@ -7,41 +7,44 @@ import com.ms.RestaurantService.Exception.CategoryNotFoundException;
 import com.ms.RestaurantService.Exception.RestaurantException;
 import com.ms.RestaurantService.Repository.CategoryRepository;
 import com.ms.RestaurantService.Repository.RestaurantRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
 @Service
 @RequiredArgsConstructor
-public class CategoryServiceImpl implements CategoryService{
+public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final RestaurantRepository restaurantRepository;
 
     @Override
+    @Transactional
     public Category addCategory(CategoryRequest categoryRequest) throws RestaurantException {
-        Category category = new Category();
-        category.setName(categoryRequest.getName());
-        category.setImageUrl(categoryRequest.getImageUrl());
-
         Restaurant restaurant = restaurantRepository.findById(categoryRequest.getRestaurantId())
                 .orElseThrow(() -> new RestaurantException(
                         "Restaurant not found with ID: " + categoryRequest.getRestaurantId()
                 ));
+
+        Category category = new Category();
+        category.setName(categoryRequest.getName());
+        category.setImageUrl(categoryRequest.getImageUrl());
         category.setRestaurant(restaurant);
+
         return categoryRepository.save(category);
     }
 
-
     @Override
-    public void deleteCategory(Long id) {
+    @Transactional
+    public void deleteCategory(Long id) throws CategoryNotFoundException {
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found with id " + id));
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found with id " + id));
         categoryRepository.delete(category);
     }
 
     @Override
+    @Transactional
     public Category updateCategory(Long id, CategoryRequest categoryRequest) throws CategoryNotFoundException {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found with id " + id));

@@ -9,14 +9,14 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DishRequest {
-
+public class DishResponse {
+    private Long id;
     private String name;
     private String description;
     private double price;
-    private boolean isAvailable;
-    private boolean isVeg;
-    private boolean isSpicy;
+    private boolean available;
+    private boolean veg;
+    private boolean spicy;
     private String imageUrl;
     private List<String> ingredients;
     private List<String> tags;

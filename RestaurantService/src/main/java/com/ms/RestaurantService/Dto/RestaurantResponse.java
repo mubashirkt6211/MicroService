@@ -4,45 +4,32 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import java.util.Date;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RestaurantRequest {
+public class RestaurantResponse {
 
-    @NotBlank(message = "Restaurant name cannot be blank")
-    @Size(min = 2, max = 255)
+    private Long id;
     private String name;
-
     private String description;
-
     private String cuisineType;
     private String location;
-
-    private Date openTime;
-    private Date closingTime;
-
     private String phoneNumber;
     private String email;
-
     private String instagramUrl;
     private String facebookUrl;
-
     private String imageUrl;
     private String logoUrl;
 
+    // Renamed boolean fields (remove 'is' prefix)
+    private boolean open;
+    private boolean featured;
+    private boolean verified;
+
     private double deliveryFee;
     private int estimatedDeliveryTime;
-
-    private boolean isOpen;
-    private boolean isFeatured;
-    private boolean isVerified;
-
     private List<String> tags;
-
-    private List<CategoryRequest> categories;
+    private List<CategoryResponse> categories;
 }

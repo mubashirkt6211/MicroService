@@ -1,11 +1,13 @@
 package com.ms.RestaurantService.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -21,31 +23,32 @@ public class Dish {
     private String name;
     private String description;
     private double price;
-    private boolean available; // is the dish currently available
-    private boolean isVeg; // vegetarian or non-veg
-    private boolean isSpicy; // spicy indicator
-    private String imageUrl; // dish image
+    private boolean isAvailable;
+    private boolean isVeg;
+    private boolean isSpicy;
+    private String imageUrl;
 
     @ElementCollection
-    private List<String> ingredients; // list of ingredients
+    private List<String> ingredients;
 
     @ElementCollection
-    private List<String> tags; // e.g., ["Gluten-Free", "Low Carb"]
+    private List<String> tags;
 
-    private int preparationTime; // estimated preparation time in minutes
+    private int preparationTime;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
     @JsonIgnore
     private Restaurant restaurant;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private java.util.Date createdAt = new java.util.Date();
+    private Date createdAt = new Date();
 
     @Temporal(TemporalType.TIMESTAMP)
-    private java.util.Date updatedAt = new java.util.Date();
+    private Date updatedAt = new Date();
 }

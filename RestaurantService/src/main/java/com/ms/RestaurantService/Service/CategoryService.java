@@ -11,7 +11,7 @@ public interface CategoryService {
 
     Category addCategory(CategoryRequest categoryRequest) throws RestaurantException;
 
-    void deleteCategory(Long id);
+    void deleteCategory(Long id) throws CategoryNotFoundException;
 
     Category updateCategory(Long id,CategoryRequest categoryRequest) throws CategoryNotFoundException;
 

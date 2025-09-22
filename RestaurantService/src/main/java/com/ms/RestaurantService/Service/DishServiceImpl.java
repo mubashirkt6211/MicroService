@@ -33,15 +33,15 @@ public class DishServiceImpl implements DishService{
         dish.setName(dishRequest.getName());
         dish.setDescription(dishRequest.getDescription());
         dish.setPrice(dishRequest.getPrice());
-        dish.setImageUrl(dishRequest.getImageUrl());
         dish.setAvailable(dishRequest.isAvailable());
         dish.setVeg(dishRequest.isVeg());
         dish.setSpicy(dishRequest.isSpicy());
+        dish.setImageUrl(dishRequest.getImageUrl());
         dish.setIngredients(dishRequest.getIngredients());
         dish.setTags(dishRequest.getTags());
         dish.setPreparationTime(dishRequest.getPreparationTime());
-
         dish.setCategory(category);
+
         return dishRepository.save(dish);
     }
 

@@ -1,5 +1,7 @@
 package com.ms.RestaurantService.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(name = "restaurant")
 public class Restaurant {
 
     @Id
@@ -20,42 +23,70 @@ public class Restaurant {
 
     private String name;
     private String description;
-    private String cuisineType; // e.g., Italian, Chinese, Indian
-    private String location; // full address or city
 
-    private Date openTime; // restaurant opening time
-    private Date closingTime; // restaurant closing time
+    @Column(name = "cuisine_type")
+    private String cuisineType;
 
-    private String phoneNumber; // contact
-    private String email; // optional email
-    private String instagram_url; // social media
-    private String facebook_url; // social media
+    private String location;
 
-    private String imageUrl; // restaurant main image
-    private String logoUrl; // logo for branding
+    @Column(name = "phone_number")
+    private String phoneNumber;
 
-    private boolean isOpen; // current open/close status
-    private boolean isFeatured; // featured restaurant
-    private boolean isVerified; // verified restaurant by admin
+    private String email;
 
-//    private double averageRating; // average customer rating
-//    private int totalRatings; // total number of ratings received
+    @Column(name = "instagram_url")
+    private String instagramUrl;
 
-    private double deliveryFee; // delivery charge
-    private int estimatedDeliveryTime; // in minutes
+    @Column(name = "facebook_url")
+    private String facebookUrl;
+
+    @Column(name = "image_url")
+    private String imageUrl;
+
+    @Column(name = "logo_url")
+    private String logoUrl;
+
+    @Column(name = "delivery_fee", nullable = false)
+    private double deliveryFee;
+
+    @Column(name = "estimated_delivery_time", nullable = false)
+    private int estimatedDeliveryTime;
+
+    @Column(name = "is_open", nullable = false)
+    @JsonProperty("isOpen")
+    private boolean isOpen;
+
+    @Column(name = "is_featured", nullable = false)
+    @JsonProperty("isFeatured")
+    private boolean isFeatured;
+
+    @Column(name = "is_verified", nullable = false)
+    @JsonProperty("isVerified")
+    private boolean isVerified;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "open_time")
+    private Date openTime;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "closing_time")
+    private Date closingTime;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at", updatable = false)
+    private Date createdAt = new Date();
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "updated_at")
+    private Date updatedAt = new Date();
 
     @ElementCollection
-    private List<String> tags; // e.g., ["Fast Food", "Vegetarian", "Desserts"]
-
-    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
-    private List<Dish> dishes; // menu items
+    private List<String> tags;
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Category> categories;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt = new Date();
-
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date updatedAt = new Date();
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Dish> dishes;
 }
